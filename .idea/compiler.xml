@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="InternetShop_4Friends" />
+        <module name="Cursor-Project-InternetShop_4Friends" />
+        <module name="Cursor-Project-InternetShop_4Friends_copy" />
+      </profile>
+    </annotationProcessing>
+  </component>
+</project>
