@@ -3,14 +3,13 @@ package view.impl;
 
 import model.Order;
 import model.OrderStatus;
-import exception.MenuCorrectWater;
+import exception.MenuNumberCorrectInputException;
 import model.Product;
 import service.OrderService;
 import service.ProductService;
 import service.Response;
 import view.Menu;
 
-import java.io.IOException;
 import java.util.*;
 import java.io.PrintStream;
 import java.util.Collection;
@@ -47,27 +46,30 @@ public class UserProductsMenu implements Menu {
             showItems(items);
             System.out.print("\nPlease enter the number of the action point you want to perform: ");
 
-            int choice = MenuCorrectWater.menuCorrectWater(4);
+            int choice = MenuNumberCorrectInputException.menuNumberCorrectInputException(4);
 //            int choice = scanner.nextInt();
             switch (choice) {
                 case 0: exit();
                 case 1: showProductList();
+                break;
                 case 2: searchProduct(scanner);
+                break;
                 case 3: addProductToOrder(scanner);
+//                break;
                 case 4: orderCheckout(scanner);
             }
         }
     }
 
     private void showProductList(){
-        Response<Map<String, Product>> allProductsMapResponse = null;
-        try {
-            allProductsMapResponse = productService.getAllProducts();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
+        Response<Map<String, Product>> allProductsMapResponse = productService.getAllProducts();
+//        try {
+//            allProductsMapResponse = productService.getAllProducts();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        } catch (ClassNotFoundException e) {
+//            e.printStackTrace();
+//        }
         if (!allProductsMapResponse.isSuccessful()){
             System.out.println(allProductsMapResponse.getMessage());
             return;
@@ -92,14 +94,7 @@ public class UserProductsMenu implements Menu {
             }
         }catch (NumberFormatException e){};
 
-        Response<Map<String, Product>> allProductsResponse = null;
-        try {
-            allProductsResponse = productService.getAllProducts();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
+        Response<Map<String, Product>> allProductsResponse = productService.getAllProducts();
         if (allProductsResponse.isSuccessful()) {
             Collection<Product> productCollection = allProductsResponse.getValue().values();
             for (Product product : productCollection) {
@@ -109,15 +104,16 @@ public class UserProductsMenu implements Menu {
             }
         }
         if (findProductList.isEmpty()){
-            System.out.println("Product does nit exist");
+            System.out.println("Product does not exist");
+            System.out.println("In our shop you can buy only flowers");
         } else {
             findProductList.forEach(System.out::println);
         }
     }
 
     private void addProductToOrder(Scanner scanner){
-        Response<Map<Integer, Order>> ordersByUsersResponse = orderService.getOrdersByUser(userMainMenu.getCurrentUser());
-        Collection<Order> orderCollection = ordersByUsersResponse.getValue().values();
+        Response<Map<Integer, Order>> ordersByUserResponse = orderService.getOrdersByUser(userMainMenu.getCurrentUser());
+        Collection<Order> orderCollection = ordersByUserResponse.getValue().values();
         int orderId = orderCollection.stream()
                 .filter(order -> order.getOrderStatus() == OrderStatus.IN_PROGRESS)
                 .findFirst()
@@ -136,18 +132,18 @@ public class UserProductsMenu implements Menu {
             }catch (NumberFormatException e){};
 
             Response<Product> productResponse = productService.getProduct(productName);
-            if(!productResponse.isSuccessful()){
+            if (!productResponse.isSuccessful()) {
                 System.out.println(productResponse.getMessage());
                 continue;
             }
             Product product = productResponse.getValue();
-            System.out.println("Enter quantity for '" + product.getName() +"' : ");
+            System.out.print("Enter quantity for '" + product.getName() + "': ");
             int quantity = scanner.nextInt();
             scanner.nextLine();
             Response<Order> addProductResponse = orderService
                     .addProductToOrder(orderId, productResponse.getValue(), quantity);
             System.out.println(addProductResponse.getMessage());
-            if (addProductResponse.isSuccessful()){
+            if (addProductResponse.isSuccessful()) {
                 break;
             }
         }
@@ -171,7 +167,7 @@ public class UserProductsMenu implements Menu {
         while (true) {
             System.out.println(order);
             showItems(checkoutItems);
-            int choise = MenuCorrectWater.menuCorrectWater(3);
+            int choise = MenuNumberCorrectInputException.menuNumberCorrectInputException(3);
             //int choise = scanner.nextInt();
             //scanner.nextLine();
             switch (choise){
@@ -246,12 +242,12 @@ public class UserProductsMenu implements Menu {
         }
     }
     public void listOfProduct() {
-        Response<Map<String, Product>> allProductsMapResponse = null;
-        try {
-            allProductsMapResponse = productService.getAllProducts();
-        } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
-        }
+        Response<Map<String, Product>> allProductsMapResponse =  productService.getAllProducts();
+//        try {
+//            allProductsMapResponse = productService.getAllProducts();
+//        } catch (IOException | ClassNotFoundException e) {
+//            e.printStackTrace();
+//        }
         assert allProductsMapResponse != null;
         if (!allProductsMapResponse.isSuccessful()) {
             System.out.println(allProductsMapResponse.getMessage());
